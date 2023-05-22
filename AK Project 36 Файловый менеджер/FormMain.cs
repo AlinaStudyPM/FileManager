@@ -23,6 +23,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 //TODO: цвета иконок
 //TODO: создать норм пользователей
 //TODO: вырезать, разархивировать???
+//TODO: шифрование пароля
 
 //#F3A0A0
 
