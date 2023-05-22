@@ -23,7 +23,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 //TODO: цвета иконок
 //TODO: создать норм пользователей
 //TODO: вырезать, разархивировать???
-//TODO: шифрование пароля
 
 //#F3A0A0
 
@@ -46,6 +45,7 @@ namespace AK_Project_36_Файловый_менеджер
         string path;
 
         MemoryStream copiedFile;
+        string copiedDir;
         string copiedFileName;
         string copiedFileExtension;
         Font GlobalFont;
@@ -213,15 +213,27 @@ namespace AK_Project_36_Файловый_менеджер
         }
         private void InsertButton_Click(object sender, EventArgs e)
         {
-            if (copiedFileName != null)
+            if (copiedFileName != "") //(copiedFileName != null)
             {
                 string filePath = NewPath(Path.Combine(path, copiedFileName + copiedFileExtension));
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     copiedFile.WriteTo(fileStream);
                 }
-                ShowFiles(path);
+                //ShowFiles(path);
             }
+            if (copiedDir != null)
+            {
+                string pathForCopy = Path.Combine(path, Path.GetFileName(copiedDir));
+                Directory.CreateDirectory(pathForCopy); //2TestFileManager/New Folder
+                foreach (string dirPath in Directory.GetDirectories(copiedDir, "*", System.IO.SearchOption.AllDirectories))
+                    Directory.CreateDirectory(dirPath.Replace(copiedDir, pathForCopy));
+
+                foreach (string newPath in Directory.GetFiles(copiedDir, "*.*", System.IO.SearchOption.AllDirectories))
+                    File.Copy(newPath, newPath.Replace(copiedDir, pathForCopy), true);
+                
+            }
+            ShowFiles(path);
         }
         private void DeleteButton_Click(object sender, EventArgs e)
         {
@@ -296,13 +308,7 @@ namespace AK_Project_36_Файловый_менеджер
         {
             if (leftList.SelectedItem is FileInfo fileInfo)
             {
-                string zipFilePath = Path.Combine(fileInfo.Directory.FullName, Path.GetFileNameWithoutExtension(fileInfo.Name) + ".zip");
-                int n = 0;
-                while (File.Exists(zipFilePath))
-                {
-                    n += 1;
-                    zipFilePath = Path.Combine(fileInfo.Directory.FullName, Path.GetFileNameWithoutExtension(fileInfo.Name) + $"({n})"+ ".zip");
-                }
+                string zipFilePath = NewPath(Path.Combine(fileInfo.Directory.FullName, Path.GetFileNameWithoutExtension(fileInfo.Name) + ".zip"));
                 using (var archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
                 {
                     archive.CreateEntryFromFile(fileInfo.FullName, fileInfo.Name);
@@ -311,13 +317,7 @@ namespace AK_Project_36_Файловый_менеджер
             }
             else if (leftList.SelectedItem is DirectoryInfo directoryInfo)
             {
-                string zipDirName = $"{directoryInfo.FullName}.zip";
-                int n = 0;
-                while (File.Exists(zipDirName))
-                {
-                    n += 1;
-                    zipDirName = Path.Combine(directoryInfo.Parent.FullName, Path.GetFileNameWithoutExtension(directoryInfo.FullName) + $"({n})" + ".zip");
-                }
+                string zipDirName = NewPath(Path.Combine(directoryInfo.Parent.FullName, Path.GetFileNameWithoutExtension(directoryInfo.Name) + ".zip"));
                 ZipFile.CreateFromDirectory(directoryInfo.FullName, zipDirName);
                 ShowFiles(path);
             }
@@ -380,7 +380,7 @@ namespace AK_Project_36_Файловый_менеджер
             leftList.Items.Clear();
             TextPath.Text = root;
             DirectoryInfo dir = new DirectoryInfo(root);
-            IEnumerable<DirectoryInfo> dirInfo = dir.EnumerateDirectories("*", System.IO.SearchOption.AllDirectories);
+            DirectoryInfo[] dirInfo = dir.GetDirectories();
             try
             {
                 foreach (DirectoryInfo info in dirInfo)
@@ -409,6 +409,7 @@ namespace AK_Project_36_Файловый_менеджер
             try
             {
                 copiedFile = new MemoryStream();
+                copiedDir = "";
                 //FileInfo fileInfo = leftList.SelectedItem as FileInfo;
                 copiedFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
                 copiedFileExtension = Path.GetExtension(fileInfo.Name);
@@ -425,7 +426,10 @@ namespace AK_Project_36_Файловый_менеджер
 
         public void CopyDirectory(DirectoryInfo directoryInfo)
         {
-            //Через архивирование???
+            copiedDir = directoryInfo.FullName;
+            copiedFile = new MemoryStream();
+            copiedFileName = "";
+            copiedFileExtension = "";
         }
 
         public string NewPath(string currentPath) //Вынести код изменения имени
