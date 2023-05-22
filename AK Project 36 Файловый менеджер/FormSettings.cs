@@ -89,8 +89,6 @@ namespace AK_Project_36_Файловый_менеджер
 
             Color[] colors = { Color.Purple, Color.Tomato, Color.Gold, Color.Moccasin, Color.Pink,
                                Color.RoyalBlue, Color.YellowGreen, Color.LightCyan, Color.Gainsboro, Color.White };
-            //DarkMagenta(Purple), Tomato, Pink, Moccasin, Gold, 
-            //YellowGreen, RoyalBlue, LightCyan, Scroolbar, White
             for (int i = 0; i < 10; i++)
             {
                 Panel panel = new Panel();
@@ -101,10 +99,6 @@ namespace AK_Project_36_Файловый_менеджер
                 panel.Click += Panel_Click;
                 Controls.Add(panel);
             }
-
-            /*ChooseColorPanel = new ColorDialog();
-            //ChooseColorPanel.Location = new Point(180, 150);
-            Controls.Add(ChooseColorPanel);*/
 
             OkButton = new Button();
             OkButton.Text = "OK";
