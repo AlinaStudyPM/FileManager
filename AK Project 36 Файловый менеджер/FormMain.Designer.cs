@@ -1,6 +1,6 @@
 ﻿namespace AK_Project_36_Файловый_менеджер
 {
-    partial class Form1
+    partial class FormMain
     {
         /// <summary>
         /// Обязательная переменная конструктора.

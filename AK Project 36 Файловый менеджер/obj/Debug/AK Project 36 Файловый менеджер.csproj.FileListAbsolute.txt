@@ -3,9 +3,9 @@ C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK 
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\bin\Debug\AK Project 36 Файловый менеджер.pdb
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.csproj.AssemblyReference.cache
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.csproj.SuggestedBindingRedirects.cache
-C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK_Project_36_Файловый_менеджер.Form1.resources
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK_Project_36_Файловый_менеджер.Properties.Resources.resources
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.csproj.GenerateResource.cache
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.csproj.CoreCompileInputs.cache
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.exe
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.pdb
+C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK_Project_36_Файловый_менеджер.FormMain.resources

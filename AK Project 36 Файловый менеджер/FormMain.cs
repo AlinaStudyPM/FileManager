@@ -15,14 +15,20 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 
 //Ошибка доступа к файлу
 //Файл без расширения
+//TODO: копирование папок
+//TODO: цвета иконок
+//TODO: создать норм пользователей
+//TODO: вырезать, разархивировать???
+
 //#F3A0A0
 
 namespace AK_Project_36_Файловый_менеджер
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
         TextBox TextPath;
         Button ReturnButton;
@@ -32,6 +38,7 @@ namespace AK_Project_36_Файловый_менеджер
         Button DeleteButton;
         Button RenameButton;
         Button ArchieveButton;
+        Button LogoutButton;
 
         Button SettingsButton;
         ListBox leftList;
@@ -40,87 +47,97 @@ namespace AK_Project_36_Файловый_менеджер
         MemoryStream copiedFile;
         string copiedFileName;
         string copiedFileExtension;
+        Font GlobalFont;
+        BinaryFormatter binFormatter;
+        User CurrentUser;
+        FormLogin LoginForm;
+        //LinkedList<User> Users;
 
-
-        public Form1()
+        public FormMain(FormLogin loginForm, User currentUser)
         {
+            CurrentUser = currentUser;
+            LoginForm = loginForm;
+
             InitializeComponent();
             Size = new Size(860, 600);
             Text = "Файловый менеджер";
-            BackColor = Color.LightCyan; //Из файлика
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            //Icon = new Icon(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ProgrammIcon.ico");
+            Icon = new Icon(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ProgrammIcon.ico");
+            FormClosed += FormMain_FormClosed;
+            CenterToScreen();
 
             copiedFile = new MemoryStream();
+            BackColor = CurrentUser.BackgroundColor;
+            GlobalFont = new Font(CurrentUser.FontFamily, (int)CurrentUser.FontSize);
 
             TextPath = new TextBox();
             TextPath.Location = new Point(10, 10);
             TextPath.Size = new Size(490, 30);
-            TextPath.Font = new Font("Arial", 12);
+            TextPath.Font = GlobalFont;
             Controls.Add(TextPath);
 
             ReturnButton = new Button();
-            ReturnButton.Text = "<";
+            //ReturnButton.Text = "<";
             ReturnButton.Location = new Point(15, 50);
             ReturnButton.Size = new Size(40, 40);
             ReturnButton.BackColor = Color.White;
-            //ReturnButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ReturnButtonIcon.png");
+            ReturnButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ReturnButtonIcon.png");
             ReturnButton.Click += ReturnButton_Click;
             Controls.Add(ReturnButton);
 
             CopyButton = new Button();
-            CopyButton.Text = "C";
+            //CopyButton.Text = "C";
             CopyButton.Location = new Point(55, 50);
             CopyButton.Size = new Size(40, 40);
             CopyButton.BackColor = Color.White;
-            //CopyButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\CopyButtonIcon.png");
+            CopyButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\CopyButtonIcon.png");
             CopyButton.Click += CopyButton_Click;
             Controls.Add(CopyButton);
 
             InsertButton = new Button();
-            InsertButton.Text = "V";
+            //InsertButton.Text = "V";
             InsertButton.Location = new Point(95, 50);
             InsertButton.Size = new Size(40, 40);
             InsertButton.BackColor = Color.White;
-            //InsertButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\InsertButtonIcon.png");
+            InsertButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\InsertButtonIcon.png");
             InsertButton.Click += InsertButton_Click;
             Controls.Add(InsertButton);
 
             DeleteButton = new Button();
-            DeleteButton.Text = "D";
+            //DeleteButton.Text = "D";
             DeleteButton.Location = new Point(135, 50);
             DeleteButton.Size = new Size(40, 40);
             DeleteButton.BackColor = Color.White;
-            //DeleteButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\DeleteButtonIcon.png");
+            DeleteButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\DeleteButtonIcon.png");
             DeleteButton.Click += DeleteButton_Click;
             Controls.Add(DeleteButton);
 
             NewFolderButton = new Button();
-            NewFolderButton.Text = " + ";
+            //NewFolderButton.Text = " + ";
             NewFolderButton.ForeColor = Color.LightPink;
             NewFolderButton.Font = new Font("Arial", 14);
             NewFolderButton.Location = new Point(175, 50);
             NewFolderButton.Size = new Size(40, 40);
             NewFolderButton.BackColor = Color.White;
-            //NewFolderButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\NewFolderIcon.png");
+            NewFolderButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\NewFolderIcon.png");
             NewFolderButton.Click += NewFolderButton_Click;
             Controls.Add(NewFolderButton);
 
             RenameButton = new Button();
-            RenameButton.Text = "R";
+            //RenameButton.Text = "R";
             RenameButton.Location = new Point(215, 50);
             RenameButton.Size = new Size(40, 40);
             RenameButton.BackColor = Color.White;
-            //RenameButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\RenameButtonIcon.png");
+            RenameButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\RenameButtonIcon.png");
             RenameButton.Click += RenameButton_Click;
             Controls.Add(RenameButton);
 
             ArchieveButton = new Button();
-            ArchieveButton.Text = "Z";
+            //ArchieveButton.Text = "Z";
             ArchieveButton.Location = new Point(255, 50);
             ArchieveButton.Size = new Size(40, 40);
             ArchieveButton.BackColor = Color.White;
-            //ArchieveButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ArchieveButtonIcon.png");
+            ArchieveButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ArchieveButtonIcon.png");
             ArchieveButton.Click += ArchieveButton_Click;
             Controls.Add(ArchieveButton);
 
@@ -130,24 +147,40 @@ namespace AK_Project_36_Файловый_менеджер
             leftList.Name = "Список файлов";
             leftList.Location = new Point(20, 100);
             leftList.Size = new Size(800, 430);
-            leftList.Font = new Font("Arial", 11);
+            leftList.Font = GlobalFont;
             //leftList.SelectionColor = Color.Pink;
             leftList.MouseDoubleClick += LeftList_MouseDoubleClick;
             Controls.Add(leftList);
 
-            path = @"C:\Users\Pugalo\Downloads";
+            path = @"C:\Users\Pugalo";
             ShowFiles(path);
 
             SettingsButton = new Button();
-            SettingsButton.Text = "S";
-            SettingsButton.Location = new Point(780, 50);
+            //SettingsButton.Text = "S";
+            SettingsButton.Location = new Point(740, 50);
             SettingsButton.Size = new Size(40, 40);
             SettingsButton.BackColor = Color.White;
-            //SettingsButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\SettingsButtonIcon.png");
+            SettingsButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\SettingsButtonIcon.png");
             SettingsButton.Click += SettingsButton_Click;
-            //Controls.Add(SettingsButton);
+            Controls.Add(SettingsButton);
+
+            LogoutButton = new Button();
+            //LogoutButton.Text = "->";
+            LogoutButton.Location = new Point(780, 50);
+            LogoutButton.Size = new Size(40, 40);
+            LogoutButton.BackColor = Color.White;
+            LogoutButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\LogOutButtonIcon.png");
+            LogoutButton.Click += LogoutButton_Click;
+            Controls.Add(LogoutButton);
         }
 
+        public void ChangeAppearance(int fontSize, string fontFamily, Color backColor)
+        {
+            GlobalFont = new Font(fontFamily, fontSize);
+            TextPath.Font = GlobalFont;
+            leftList.Font = GlobalFont;
+            this.BackColor = backColor;
+        }
 
 
         //------------------Ф У Н К Ц И И   К Н О П О К----------------------------
@@ -185,7 +218,7 @@ namespace AK_Project_36_Файловый_менеджер
                 string filePath = NewPath(Path.Combine(path, copiedFileName + copiedFileExtension));
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    copiedFile.CopyTo(fileStream);
+                    copiedFile.WriteTo(fileStream);
                 }
                 ShowFiles(path);
             }
@@ -314,8 +347,31 @@ namespace AK_Project_36_Файловый_менеджер
 
         private void SettingsButton_Click(object sender, EventArgs e)
         {
-
+            FormSettings formSettings = new FormSettings(this, CurrentUser);
+            formSettings.ShowDialog();
         }
+        private void LogoutButton_Click(object sender, EventArgs e)
+        {
+            binFormatter = new BinaryFormatter();
+            using (FileStream file = new FileStream("users.bin", FileMode.OpenOrCreate))
+            {
+                binFormatter.Serialize(file, LoginForm.Users);
+            }
+            Hide();
+            FormLogin formLogin = new FormLogin();
+            formLogin.ShowDialog();
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            binFormatter = new BinaryFormatter();
+            using (FileStream file = new FileStream("users.bin", FileMode.OpenOrCreate))
+            {
+                binFormatter.Serialize(file, LoginForm.Users);
+            }
+            Application.Exit();
+        }
+
 
 
         //-----------------------О Б Щ И Е   Ф У Н К Ц И И-------------------------------------------------
@@ -352,6 +408,7 @@ namespace AK_Project_36_Файловый_менеджер
         {
             try
             {
+                copiedFile = new MemoryStream();
                 //FileInfo fileInfo = leftList.SelectedItem as FileInfo;
                 copiedFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
                 copiedFileExtension = Path.GetExtension(fileInfo.Name);
@@ -384,19 +441,16 @@ namespace AK_Project_36_Файловый_менеджер
                 else
                 {
                     int n = 0;
-                    while (File.Exists(currentPath))
+                    string newPath = currentPath;
+                    while (File.Exists(newPath))
                     {
                         n += 1;
-                        currentPath = Path.Combine(Path.GetDirectoryName(currentPath), Path.GetFileNameWithoutExtension(currentPath) + $"({n})" + Path.GetExtension(currentPath));
+                        newPath = Path.Combine(Path.GetDirectoryName(currentPath), Path.GetFileNameWithoutExtension(currentPath) + $"({n})" + Path.GetExtension(currentPath));
                     }
+                    currentPath = newPath;
                 }
             }
             return currentPath;
         }
-
-
-
-        //File.Create(path).Dispose(); //создать файл и сразу закрыть поток
-        //Использовать не файлы, а потоки!
     }
 }
