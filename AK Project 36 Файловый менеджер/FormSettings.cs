@@ -9,8 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-//TODO: Как выбрать цвет фона
-
 namespace AK_Project_36_Файловый_менеджер
 {
     public partial class FormSettings : Form
@@ -57,9 +55,6 @@ namespace AK_Project_36_Файловый_менеджер
             ListOfSizes.Maximum = 20;
             ListOfSizes.Minimum = 8;
             ListOfSizes.Value = CurrentUser.FontSize;
-            /*ListOfSizes.Items.Add("Мелкий");
-            ListOfSizes.Items.Add("Средний");
-            ListOfSizes.Items.Add("Крупный");*/
             Controls.Add(ListOfSizes);
 
             FontStyleLabel = new Label();

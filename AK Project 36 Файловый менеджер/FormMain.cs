@@ -51,7 +51,6 @@ namespace AK_Project_36_Файловый_менеджер
         BinaryFormatter binFormatter;
         User CurrentUser;
         FormLogin LoginForm;
-        //LinkedList<User> Users;
 
         public FormMain(FormLogin loginForm, User currentUser)
         {
