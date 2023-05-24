@@ -16,8 +16,8 @@ namespace AK_Project_36_Файловый_менеджер
         private string Password;
 
 
-        public decimal FontSize = 12;
-        public string FontFamily = "Arial";
+        public decimal FontSize = 14;
+        public string FontFamily = "Candara";
         public Color BackgroundColor = Color.LightCyan;
 
         public User() { }
