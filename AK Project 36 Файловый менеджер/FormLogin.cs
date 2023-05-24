@@ -37,7 +37,7 @@ namespace AK_Project_36_Файловый_менеджер
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Size = new Size(320, 210);
             LoginFormFont = new Font("Arial", 11);
-            FormClosed += FormLogin_FormClosed;
+            //FormClosed += FormLogin_FormClosed;
             CenterToParent();
 
             LoginLabel = new Label();
@@ -76,7 +76,7 @@ namespace AK_Project_36_Файловый_менеджер
             LoginButton.Font = LoginFormFont;
             LoginButton.Location = new Point(190, 110);
             LoginButton.Size = new Size(100, LabelHeight * 3 / 2);
-            LoginButton.Click += LoginButton_Click;
+            //LoginButton.Click += LoginButton_Click;
             Controls.Add(LoginButton);
 
             RegistrationButton = new Button();
@@ -84,7 +84,7 @@ namespace AK_Project_36_Файловый_менеджер
             RegistrationButton.Font = LoginFormFont;
             RegistrationButton.Location = new Point(20, 110);
             RegistrationButton.Size = new Size(160, LabelHeight * 3 / 2);
-            RegistrationButton.Click += RegistrationButton_Click;
+            //RegistrationButton.Click += RegistrationButton_Click;0000
             Controls.Add(RegistrationButton);
 
 
@@ -111,7 +111,7 @@ namespace AK_Project_36_Файловый_менеджер
 
         
 
-        private void RegistrationButton_Click(object sender, EventArgs e)
+        /*private void RegistrationButton_Click(object sender, EventArgs e)
         {
             if (LoginBox.Text != "" && PasswordBox.Text != "")
             {
@@ -187,6 +187,6 @@ namespace AK_Project_36_Файловый_менеджер
                 //MessageBox.Show("Ок3");
             }
             Application.Exit();
-        }
+        }*/
     }
 }

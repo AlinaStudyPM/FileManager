@@ -9,3 +9,7 @@ C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK 
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.exe
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.pdb
 C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK_Project_36_Файловый_менеджер.FormMain.resources
+C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\bin\Debug\HtmlAgilityPack.xml
+C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\AK Project 36 Файловый менеджер\obj\Debug\AK Project 36 Файловый менеджер.csproj.CopyComplete

@@ -20,6 +20,7 @@ namespace AK_Project_36_Файловый_менеджер
         public string FontFamily = "Arial";
         public Color BackgroundColor = Color.LightCyan;
 
+        public User() { }
         public User(string login, string password)
         {
             Login = login;

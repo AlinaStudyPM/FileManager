@@ -4,6 +4,8 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.VisualBasic.FileIO;
 using System.IO.Compression;
+using HtmlAgilityPack;
+using System.Net;
 
 
 using System.ComponentModel;
@@ -16,6 +18,8 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Net;
+using System.Text.RegularExpressions;
 
 //Ошибка доступа к файлу
 //Файл без расширения
@@ -33,6 +37,17 @@ namespace AK_Project_36_Файловый_менеджер
     public partial class FormMain : Form
     {
         TextBox TextPath;
+        ComboBox SearchLine;
+        Button SearchButton;
+        ListBox ResultList;
+        Button SettingsButton;
+
+        Font GlobalFont;
+        User CurrentUser;
+        WebClient ItsWebClient;
+
+
+
         Button ReturnButton;
         Button CopyButton;
         Button InsertButton;
@@ -42,41 +57,62 @@ namespace AK_Project_36_Файловый_менеджер
         Button ArchieveButton;
         Button LogoutButton;
 
-        Button SettingsButton;
+        
         ListBox leftList;
         string path;
-
         MemoryStream copiedFile;
         string copiedDir;
         string copiedFileName;
         string copiedFileExtension;
-        Font GlobalFont;
         BinaryFormatter binFormatter;
-        User CurrentUser;
-        FormLogin LoginForm;
+        
 
-        public FormMain(FormLogin loginForm, User currentUser)
+        public FormMain()
         {
-            CurrentUser = currentUser;
-            LoginForm = loginForm;
+            CurrentUser = new User();
 
             InitializeComponent();
             Size = new Size(860, 600);
             Text = "Файловый менеджер";
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = new Icon(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ProgrammIcon.ico");
-            FormClosed += FormMain_FormClosed;
             CenterToScreen();
 
             copiedFile = new MemoryStream();
             BackColor = CurrentUser.BackgroundColor;
             GlobalFont = new Font(CurrentUser.FontFamily, (int)CurrentUser.FontSize);
 
-            TextPath = new TextBox();
-            TextPath.Location = new Point(10, 10);
-            TextPath.Size = new Size(490, 30);
-            TextPath.Font = GlobalFont;
-            Controls.Add(TextPath);
+            SearchLine = new ComboBox();
+            SearchLine.Location = new Point(10, 10);
+            SearchLine.Size = new Size(490, 30);
+            SearchLine.Font = GlobalFont;
+            string[] exampleSearches = { "Python", "C++", "Java" };
+            foreach (string item in exampleSearches)
+            {
+                SearchLine.Items.Add(item);
+            }
+            Controls.Add(SearchLine);
+
+            SearchButton = new Button();
+            SearchButton.Location = new Point(510, 9);
+            SearchButton.Size = new Size(100, 30);
+            SearchButton.Font = GlobalFont;
+            SearchButton.Text = "Найти";
+            SearchButton.Click += SearchButton_Click;
+            Controls.Add(SearchButton);
+
+            ResultList = new ListBox();
+            ResultList.Location = new Point(20, 100);
+            ResultList.Size = new Size(800, 430);
+            ResultList.Font = GlobalFont;
+            ResultList.MouseDoubleClick += ResultList_MouseDoubleClick;
+            Controls.Add(ResultList);
+
+            
+
+
+
+
 
             ReturnButton = new Button();
             //ReturnButton.Text = "<";
@@ -87,64 +123,6 @@ namespace AK_Project_36_Файловый_менеджер
             ReturnButton.Click += ReturnButton_Click;
             Controls.Add(ReturnButton);
 
-            CopyButton = new Button();
-            //CopyButton.Text = "C";
-            CopyButton.Location = new Point(55, 50);
-            CopyButton.Size = new Size(40, 40);
-            CopyButton.BackColor = Color.White;
-            CopyButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\CopyButtonIcon.png");
-            CopyButton.Click += CopyButton_Click;
-            Controls.Add(CopyButton);
-
-            InsertButton = new Button();
-            //InsertButton.Text = "V";
-            InsertButton.Location = new Point(95, 50);
-            InsertButton.Size = new Size(40, 40);
-            InsertButton.BackColor = Color.White;
-            InsertButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\InsertButtonIcon.png");
-            InsertButton.Click += InsertButton_Click;
-            Controls.Add(InsertButton);
-
-            DeleteButton = new Button();
-            //DeleteButton.Text = "D";
-            DeleteButton.Location = new Point(135, 50);
-            DeleteButton.Size = new Size(40, 40);
-            DeleteButton.BackColor = Color.White;
-            DeleteButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\DeleteButtonIcon.png");
-            DeleteButton.Click += DeleteButton_Click;
-            Controls.Add(DeleteButton);
-
-            NewFolderButton = new Button();
-            //NewFolderButton.Text = " + ";
-            NewFolderButton.ForeColor = Color.LightPink;
-            NewFolderButton.Font = new Font("Arial", 14);
-            NewFolderButton.Location = new Point(175, 50);
-            NewFolderButton.Size = new Size(40, 40);
-            NewFolderButton.BackColor = Color.White;
-            NewFolderButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\NewFolderIcon.png");
-            NewFolderButton.Click += NewFolderButton_Click;
-            Controls.Add(NewFolderButton);
-
-            RenameButton = new Button();
-            //RenameButton.Text = "R";
-            RenameButton.Location = new Point(215, 50);
-            RenameButton.Size = new Size(40, 40);
-            RenameButton.BackColor = Color.White;
-            RenameButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\RenameButtonIcon.png");
-            RenameButton.Click += RenameButton_Click;
-            Controls.Add(RenameButton);
-
-            ArchieveButton = new Button();
-            //ArchieveButton.Text = "Z";
-            ArchieveButton.Location = new Point(255, 50);
-            ArchieveButton.Size = new Size(40, 40);
-            ArchieveButton.BackColor = Color.White;
-            ArchieveButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ArchieveButtonIcon.png");
-            ArchieveButton.Click += ArchieveButton_Click;
-            Controls.Add(ArchieveButton);
-
-
-
             leftList = new ListBox();
             leftList.Name = "Список файлов";
             leftList.Location = new Point(20, 100);
@@ -152,28 +130,28 @@ namespace AK_Project_36_Файловый_менеджер
             leftList.Font = GlobalFont;
             //leftList.SelectionColor = Color.Pink;
             leftList.MouseDoubleClick += LeftList_MouseDoubleClick;
-            Controls.Add(leftList);
+            //Controls.Add(leftList);
 
             path = @"C:\Users\Pugalo";
             ShowFiles(path);
 
             SettingsButton = new Button();
             //SettingsButton.Text = "S";
-            SettingsButton.Location = new Point(740, 50);
+            SettingsButton.Location = new Point(780, 50);
             SettingsButton.Size = new Size(40, 40);
             SettingsButton.BackColor = Color.White;
             SettingsButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\SettingsButtonIcon.png");
             SettingsButton.Click += SettingsButton_Click;
             Controls.Add(SettingsButton);
 
-            LogoutButton = new Button();
+            /*LogoutButton = new Button();
             //LogoutButton.Text = "->";
             LogoutButton.Location = new Point(780, 50);
             LogoutButton.Size = new Size(40, 40);
             LogoutButton.BackColor = Color.White;
             LogoutButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\LogOutButtonIcon.png");
             LogoutButton.Click += LogoutButton_Click;
-            Controls.Add(LogoutButton);
+            Controls.Add(LogoutButton);*/
         }
 
         public void ChangeAppearance(int fontSize, string fontFamily, Color backColor)
@@ -186,6 +164,69 @@ namespace AK_Project_36_Файловый_менеджер
 
 
         //------------------Ф У Н К Ц И И   К Н О П О К----------------------------
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            ItsWebClient = new WebClient();
+            string searchUrl = "https://www.amazon.com/s?k=python&i=stripbooks-intl-ship&ref=nb_sb_noss";
+            string htmlCode = ItsWebClient.DownloadString(searchUrl);
+            HtmlAgilityPack.HtmlDocument document = new HtmlAgilityPack.HtmlDocument();
+            document.LoadHtml(htmlCode);
+            string xpath = "//div[@data-component-type='s-search-result']";
+            HtmlNodeCollection bookNodes = document.DocumentNode.SelectNodes(xpath);
+            if (bookNodes != null)
+            {
+                List<Book> books = new List<Book>();
+
+                foreach (HtmlNode node in bookNodes)
+                {
+                    var titleNode = node.SelectSingleNode(".//span[@class='a-size-medium a-color-base a-text-normal']");
+                    string title = titleNode?.InnerText.Trim();
+
+                    // Получаем ссылку на книгу
+                    var linkNode = node.SelectSingleNode(".//a[contains(@class, 'a-link-normal') and contains(@class, 's-underline-text') and contains(@class, 's-underline-link-text') and contains(@class, 's-link-style') and contains(@class, 'a-text-normal')]");
+                    string link = linkNode?.GetAttributeValue("href", "");
+
+                    if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(link))
+                    {
+                        books.Add(new Book(title, "https://www.amazon.com" +link));
+                    }
+                }
+                ShowResult(books);
+            }
+            else
+            {
+                MessageBox.Show("Ничего не найдено. Попробуйте переформулировать свой запрос");
+            }
+        }
+
+        public void ShowResult(List<Book> books)
+        {
+            ResultList.Items.Clear();
+            foreach (Book book in books)
+            {
+                ResultList.Items.Add(book);
+            }
+        }
+        private void ResultList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Book currentBook = ResultList.SelectedItem as Book;
+            Process.Start(currentBook.Link);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private void ReturnButton_Click(object sender, EventArgs e)
         {
             if (Path.GetDirectoryName(path) != null)
@@ -195,185 +236,21 @@ namespace AK_Project_36_Файловый_менеджер
             ShowFiles(path);
         }
 
-        private void CopyButton_Click(object sender, EventArgs e)
-        {
-            if (leftList.SelectedItem != null)
-            {
-                if (leftList.SelectedItem is FileInfo fileInfo)
-                {
-                    CopyFile(fileInfo);
-                }
-                else if (leftList.SelectedItem is DirectoryInfo directoryInfo)
-                {
-                    CopyDirectory(directoryInfo);
-                }
-                else
-                {
-                    // объект не является ни FileInfo, ни DirectoryInfo
-                }
-            }
-        }
-        private void InsertButton_Click(object sender, EventArgs e)
-        {
-            if (copiedFileName != "") //(copiedFileName != null)
-            {
-                string filePath = NewPath(Path.Combine(path, copiedFileName + copiedFileExtension));
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    copiedFile.WriteTo(fileStream);
-                }
-                //ShowFiles(path);
-            }
-            if (copiedDir != null)
-            {
-                string pathForCopy = Path.Combine(path, Path.GetFileName(copiedDir));
-                Directory.CreateDirectory(pathForCopy); //2TestFileManager/New Folder
-                foreach (string dirPath in Directory.GetDirectories(copiedDir, "*", System.IO.SearchOption.AllDirectories))
-                    Directory.CreateDirectory(dirPath.Replace(copiedDir, pathForCopy));
-
-                foreach (string newPath in Directory.GetFiles(copiedDir, "*.*", System.IO.SearchOption.AllDirectories))
-                    File.Copy(newPath, newPath.Replace(copiedDir, pathForCopy), true);
-                
-            }
-            ShowFiles(path);
-        }
-        private void DeleteButton_Click(object sender, EventArgs e)
-        {
-            if (leftList.SelectedItem != null)
-            {
-
-                try
-                {
-                    //throw new Exception();
-                    if (leftList.SelectedItem is FileInfo fileInfo)
-                    {
-                        string message = $"Вы уверены, что хотите удалить {fileInfo.Name}?";
-                        DialogResult result = MessageBox.Show(message, "Удаление", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                        if (result == DialogResult.Yes)
-                        {
-                            FileSystem.DeleteFile(fileInfo.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                        }
-                    }
-                    else if (leftList.SelectedItem is DirectoryInfo directoryInfo)
-                    {
-                        string message = $"Вы уверены, что хотите удалить {directoryInfo.Name}?";
-                        DialogResult result = MessageBox.Show(message, "Удаление", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                        if (result == DialogResult.Yes)
-                        {
-                            FileSystem.DeleteDirectory(directoryInfo.FullName, UIOption.AllDialogs, RecycleOption.SendToRecycleBin);
-                        }
-                    }
-                }
-                catch
-                {
-                    MessageBox.Show($"Не удалось удалить {leftList.SelectedItem}");
-                }
-                
-            }
-            ShowFiles(path);
-        }
-        private void NewFolderButton_Click(object sender, EventArgs e)
-        {
-            string pathOfNewFolder = Path.Combine(path, "New Folder");
-            if (Directory.Exists(pathOfNewFolder))
-            {
-                int n = 0;
-                string newPath = pathOfNewFolder;
-                while (Directory.Exists(newPath))
-                {
-                    n += 1;
-                    newPath = Path.Combine(Path.GetDirectoryName(pathOfNewFolder), Path.GetFileNameWithoutExtension(pathOfNewFolder) + $"({n})" + Path.GetExtension(pathOfNewFolder));
-                }
-                pathOfNewFolder = newPath;
-            }
-            
-            Directory.CreateDirectory(pathOfNewFolder);
-            ShowFiles(path);
-        }
-
-        private void RenameButton_Click(object sender, EventArgs e)
-        {
-            if (leftList.SelectedItem is FileInfo fileInfo)
-            {
-                string oldName = Path.GetFileNameWithoutExtension(fileInfo.Name);
-                string extension = Path.GetExtension(fileInfo.Name);
-                string newName = Microsoft.VisualBasic.Interaction.InputBox($"Введите новое имя файла {oldName}:", "Переименование файла", oldName);
-                if (!string.IsNullOrEmpty(newName))
-                {
-                    string newPath = Path.Combine(Path.GetDirectoryName(fileInfo.FullName), newName + extension);
-                    File.Move(fileInfo.FullName, newPath);
-                }
-            }
-            else if (leftList.SelectedItem is DirectoryInfo directoryInfo)
-            {
-                string oldName = Path.GetFileNameWithoutExtension(directoryInfo.Name);
-                string extension = Path.GetExtension(directoryInfo.Name);
-                string newName = Microsoft.VisualBasic.Interaction.InputBox($"Введите новое имя папки {oldName}:", "Переименование папки", oldName);
-                if (!string.IsNullOrEmpty(newName) && newName != oldName)
-                {
-                    string newPath = Path.Combine(Path.GetDirectoryName(directoryInfo.FullName), newName + extension);
-                    Directory.Move(directoryInfo.FullName, newPath);
-                }
-            }
-            ShowFiles(path);
-        }
-
-        private void ArchieveButton_Click(object sender, EventArgs e)
-        {
-            if (leftList.SelectedItem is FileInfo fileInfo)
-            {
-                string zipFilePath = NewPath(Path.Combine(fileInfo.Directory.FullName, Path.GetFileNameWithoutExtension(fileInfo.Name) + ".zip"));
-                using (var archive = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
-                {
-                    archive.CreateEntryFromFile(fileInfo.FullName, fileInfo.Name);
-                }
-                ShowFiles(path);
-            }
-            else if (leftList.SelectedItem is DirectoryInfo directoryInfo)
-            {
-                string zipDirName = NewPath(Path.Combine(directoryInfo.Parent.FullName, Path.GetFileNameWithoutExtension(directoryInfo.Name) + ".zip"));
-                ZipFile.CreateFromDirectory(directoryInfo.FullName, zipDirName);
-                ShowFiles(path);
-            }
-        }
-
-        private void LeftList_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            string currentPath = Path.Combine(path, leftList.SelectedItem.ToString());
-            try 
-            {
-                if (!Path.HasExtension(currentPath))
-                {
-                    ShowFiles(currentPath);
-                    path = currentPath;
-                }
-                else
-                {
-                    Process.Start(currentPath);
-                }
-            }
-            catch 
-            {
-                MessageBox.Show($"Не получается открыть {Path.GetFileNameWithoutExtension(currentPath)}");
-                ShowFiles(path);
-            }
-        }
-
         private void SettingsButton_Click(object sender, EventArgs e)
         {
             FormSettings formSettings = new FormSettings(this, CurrentUser);
             formSettings.ShowDialog();
         }
-        private void LogoutButton_Click(object sender, EventArgs e)
+        /*private void LogoutButton_Click(object sender, EventArgs e)
         {
             LoginForm.Show();
             Hide();
-        }
+        }*/
 
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        /*private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
             LoginForm.Show();
-        }
+        }*/
 
 
 
@@ -381,7 +258,7 @@ namespace AK_Project_36_Файловый_менеджер
         public void ShowFiles(string root)
         {
             leftList.Items.Clear();
-            TextPath.Text = root;
+            //TextPath.Text = root;
             DirectoryInfo dir = new DirectoryInfo(root);
             DirectoryInfo[] dirInfo = dir.GetDirectories();
             try
