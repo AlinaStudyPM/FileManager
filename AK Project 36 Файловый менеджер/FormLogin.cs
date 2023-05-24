@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -51,6 +52,7 @@ namespace AK_Project_36_Файловый_менеджер
             LoginBox.Font = LoginFormFont;
             LoginBox.Location = new Point(120, 25);
             LoginBox.Size = new Size(150, 20);
+            LoginBox.MaxLength = 16;
             Controls.Add(LoginBox);
 
             PasswordLabel = new Label();
@@ -65,6 +67,8 @@ namespace AK_Project_36_Файловый_менеджер
             PasswordBox.Font = LoginFormFont;
             PasswordBox.Location = new Point(120, 65);
             PasswordBox.Size = new Size(150, 20);
+            PasswordBox.MaxLength = 16;
+            PasswordBox.PasswordChar = '*';
             Controls.Add(PasswordBox);
 
             LoginButton = new Button();
@@ -89,7 +93,14 @@ namespace AK_Project_36_Файловый_менеджер
             {
                 if (file.Length > 0)
                 {
-                    Users = binFormatter.Deserialize(file) as LinkedList<User>;
+                    try
+                    {
+                        Users = binFormatter.Deserialize(file) as LinkedList<User>;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Неудалось восставновить данные пользователей");
+                    }
                 }
                 else
                 {
@@ -111,6 +122,8 @@ namespace AK_Project_36_Файловый_менеджер
                     formMain.FormClosed += FormMain_FormClosed;
                     Hide();
                     formMain.ShowDialog();
+                    LoginBox.Text = "";
+                    PasswordBox.Text = "";
                 }
                 else
                 {
@@ -132,6 +145,8 @@ namespace AK_Project_36_Файловый_менеджер
                         formMain.FormClosed += FormMain_FormClosed;
                         Hide();
                         formMain.ShowDialog();
+                        LoginBox.Text = "";
+                        PasswordBox.Text = "";
                     }
                     else
                     {
@@ -147,7 +162,7 @@ namespace AK_Project_36_Файловый_менеджер
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Show();
+            //this.Show();
         }
 
         public User FindLogin(LinkedList<User> UsersList, string login)
@@ -161,14 +176,16 @@ namespace AK_Project_36_Файловый_менеджер
                 }
                 temp = temp.Next;
             }
-            /*if (temp.Value.Login == login)
-            {
-                return temp.Value;
-            }*/
             return null;
         }
         private void FormLogin_FormClosed(object sender, FormClosedEventArgs e)
         {
+            BinaryFormatter binFormatter = new BinaryFormatter();
+            using (FileStream file = new FileStream("users.bin", FileMode.OpenOrCreate))
+            {
+                binFormatter.Serialize(file, Users);
+                //MessageBox.Show("Ок3");
+            }
             Application.Exit();
         }
     }

@@ -19,10 +19,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 //Ошибка доступа к файлу
 //Файл без расширения
-//TODO: копирование папок
+
 //TODO: цвета иконок
 //TODO: создать норм пользователей
 //TODO: вырезать, разархивировать???
+
+//Изменены ShowPath и NewFolder
 
 //#F3A0A0
 
@@ -272,8 +274,20 @@ namespace AK_Project_36_Файловый_менеджер
         }
         private void NewFolderButton_Click(object sender, EventArgs e)
         {
-            string NameOfFolder = NewPath("New Folder");
-            Directory.CreateDirectory(Path.Combine(path, "New Folder"));
+            string pathOfNewFolder = Path.Combine(path, "New Folder");
+            if (Directory.Exists(pathOfNewFolder))
+            {
+                int n = 0;
+                string newPath = pathOfNewFolder;
+                while (Directory.Exists(newPath))
+                {
+                    n += 1;
+                    newPath = Path.Combine(Path.GetDirectoryName(pathOfNewFolder), Path.GetFileNameWithoutExtension(pathOfNewFolder) + $"({n})" + Path.GetExtension(pathOfNewFolder));
+                }
+                pathOfNewFolder = newPath;
+            }
+            
+            Directory.CreateDirectory(pathOfNewFolder);
             ShowFiles(path);
         }
 
@@ -352,24 +366,13 @@ namespace AK_Project_36_Файловый_менеджер
         }
         private void LogoutButton_Click(object sender, EventArgs e)
         {
-            binFormatter = new BinaryFormatter();
-            using (FileStream file = new FileStream("users.bin", FileMode.OpenOrCreate))
-            {
-                binFormatter.Serialize(file, LoginForm.Users);
-            }
+            LoginForm.Show();
             Hide();
-            FormLogin formLogin = new FormLogin();
-            formLogin.ShowDialog();
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            binFormatter = new BinaryFormatter();
-            using (FileStream file = new FileStream("users.bin", FileMode.OpenOrCreate))
-            {
-                binFormatter.Serialize(file, LoginForm.Users);
-            }
-            Application.Exit();
+            LoginForm.Show();
         }
 
 
