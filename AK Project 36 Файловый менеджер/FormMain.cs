@@ -148,15 +148,6 @@ namespace AK_Project_36_Файловый_менеджер
             //ReturnButton.Click += ReturnButton_Click;
             Controls.Add(ReturnButton);
 
-            leftList = new ListBox();
-            leftList.Name = "Список файлов";
-            leftList.Location = new Point(20, 100);
-            leftList.Size = new Size(800, 430);
-            leftList.Font = GlobalFont;
-            //leftList.SelectionColor = Color.Pink;
-            //leftList.MouseDoubleClick += LeftList_MouseDoubleClick;
-            //Controls.Add(leftList);
-
             SettingsButton = new Button();
             //SettingsButton.Text = "S";
             SettingsButton.Location = new Point(780, 50);
@@ -165,15 +156,6 @@ namespace AK_Project_36_Файловый_менеджер
             SettingsButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\SettingsButtonIcon.png");
             SettingsButton.Click += SettingsButton_Click;
             Controls.Add(SettingsButton);
-
-            /*LogoutButton = new Button();
-            //LogoutButton.Text = "->";
-            LogoutButton.Location = new Point(780, 50);
-            LogoutButton.Size = new Size(40, 40);
-            LogoutButton.BackColor = Color.White;
-            LogoutButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\LogOutButtonIcon.png");
-            LogoutButton.Click += LogoutButton_Click;
-            Controls.Add(LogoutButton);*/
         }
 
         public void ChangeAppearance(int fontSize, string fontFamily, Color backColor)
