@@ -111,18 +111,22 @@ namespace AK_Project_36_Файловый_менеджер
             ColumnHeader column2 = new ColumnHeader();
             ColumnHeader column3 = new ColumnHeader();
             ColumnHeader column4 = new ColumnHeader();
+            ColumnHeader column5 = new ColumnHeader();
             column1.Text = "Название";
             column2.Text = "Автор";
             column3.Text = "Рейтинг";
             column4.Text = "Цена";
-            column1.Width = 350;
-            column2.Width = 250;
-            column3.Width = 100;
-            column4.Width = 100;
+            column5.Text = "Дата";
+            column1.Width = 300;
+            column2.Width = 200;
+            column3.Width = 80;
+            column4.Width = 80;
+            column5.Width = 200;
             ResultsView.Columns.Add(column1);
             ResultsView.Columns.Add(column2);
             ResultsView.Columns.Add(column3);
             ResultsView.Columns.Add(column4);
+            ResultsView.Columns.Add(column5);
             ResultsView.ColumnClick += ResultsView_ColumnClick;
             ResultsView.ItemActivate += ResultsView_ItemActivate;
             Controls.Add(ResultsView);
@@ -217,12 +221,12 @@ namespace AK_Project_36_Файловый_менеджер
                             var linkNode = node.SelectSingleNode(".//a[contains(@class, 'a-link-normal') and contains(@class, 's-underline-text') and contains(@class, 's-underline-link-text') and contains(@class, 's-link-style') and contains(@class, 'a-text-normal')]");
                             string link = linkNode?.GetAttributeValue("href", "");
 
-                            /*var dateNode = node.SelectSingleNode(".//span[contains(@class, 'a-size-base a-color-secondary a-text-normal')]");
-                            string date = dateNode?.InnerText.Trim();*/
+                            var dateNode = node.SelectSingleNode(".//span[contains(@class, 'a-size-base a-color-secondary a-text-normal')]");
+                            string date = dateNode?.InnerText.Trim();
 
                             if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(link))
                             {
-                                books.Add(new Book(title, author, rating, price, "https://www.amazon.com" + link));
+                                books.Add(new Book(title, author, rating, price, date, "https://www.amazon.com" + link));
                             }
                         }
                     }
@@ -249,7 +253,7 @@ namespace AK_Project_36_Файловый_менеджер
             ResultsView.Items.Clear();
             foreach (Book book in books)
             {
-                ListViewItem bookItem = new ListViewItem(new[] { book.Title.Replace("&#x27;", "'"), book.Author, book.Rating, book.Price });
+                ListViewItem bookItem = new ListViewItem(new[] { book.Title.Replace("&#x27;", "'"), book.Author, book.Rating, book.Price, book.Date });
                 bookItem.Tag = book.Link;
                 ResultsView.Items.Add(bookItem);
             }
