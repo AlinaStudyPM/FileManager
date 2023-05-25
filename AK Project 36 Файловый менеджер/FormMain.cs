@@ -76,7 +76,7 @@ namespace AK_Project_36_Файловый_менеджер
             SearchLine.Location = new Point(60, 52);
             SearchLine.Size = new Size(490, 40);
             SearchLine.Font = new Font(CurrentUser.FontFamily, 15);
-            string[] exampleSearches = { "C#", "C++", "Python", "Kotlin", "Java", "Ruby", "OCaml" };
+            string[] exampleSearches = { "Python", "Kotlin", "Java", "Ruby", "OCaml" };
             foreach (string item in exampleSearches)
             {
                 SearchLine.Items.Add(item);
@@ -123,6 +123,7 @@ namespace AK_Project_36_Файловый_менеджер
             ResultsView.Columns.Add(column2);
             ResultsView.Columns.Add(column3);
             ResultsView.Columns.Add(column4);
+            ResultsView.ColumnClick += ResultsView_ColumnClick;
             ResultsView.ItemActivate += ResultsView_ItemActivate;
             Controls.Add(ResultsView);
 
@@ -146,7 +147,7 @@ namespace AK_Project_36_Файловый_менеджер
             ReturnButton.BackColor = Color.White;
             ReturnButton.Image = Image.FromFile(@"C:\Users\Pugalo\Documents\C#\AK Project 36 Файловый менеджер\Project 36 Icons\ReturnButtonIcon.png");
             //ReturnButton.Click += ReturnButton_Click;
-            Controls.Add(ReturnButton);
+            //Controls.Add(ReturnButton);
 
             SettingsButton = new Button();
             //SettingsButton.Text = "S";
@@ -161,7 +162,7 @@ namespace AK_Project_36_Файловый_менеджер
         public void ChangeAppearance(int fontSize, string fontFamily, Color backColor)
         {
             GlobalFont = new Font(fontFamily, fontSize);
-            ResultList.Font = GlobalFont;
+            ResultsView.Font = GlobalFont;
             this.BackColor = backColor;
         }
 
@@ -248,7 +249,7 @@ namespace AK_Project_36_Файловый_менеджер
             ResultsView.Items.Clear();
             foreach (Book book in books)
             {
-                ListViewItem bookItem = new ListViewItem(new[] { book.Title, book.Author, book.Rating, book.Price });
+                ListViewItem bookItem = new ListViewItem(new[] { book.Title.Replace("&#x27;", "'"), book.Author, book.Rating, book.Price });
                 bookItem.Tag = book.Link;
                 ResultsView.Items.Add(bookItem);
             }
@@ -258,6 +259,11 @@ namespace AK_Project_36_Файловый_менеджер
                     ResultList.Items.Add(book);
                 }*/
             }
+
+        private void ResultsView_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            ResultsView.ListViewItemSorter = new ListViewColumnComparer(e.Column);
+        }
 
         private void ResultsView_ItemActivate(object sender, EventArgs e)
         {
