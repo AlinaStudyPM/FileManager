@@ -26,6 +26,16 @@ namespace AK_Project_36_Файловый_менеджер
                 {
                     return (-1) * String.Compare(X.SubItems[ColumnIndex].Text, Y.SubItems[ColumnIndex].Text);
                 }
+                if (ColumnIndex == 3)
+                {
+                    if (X.SubItems[ColumnIndex].Text.Length > 0 && Y.SubItems[ColumnIndex].Text.Length > 0)
+                    {
+                        int price1 = Convert.ToInt32(X.SubItems[ColumnIndex].Text.Replace("$", "").Replace(".", ""));
+                        int price2 = Convert.ToInt32(Y.SubItems[ColumnIndex].Text.Replace("$", "").Replace(".", ""));
+                        return price1.CompareTo(price2);
+                    }
+                    return 1;
+                }
                 if (ColumnIndex == 4)
                 {
 
@@ -49,15 +59,10 @@ namespace AK_Project_36_Файловый_менеджер
                         return String.Compare(date2[2], date1[2]);
                     }
                 }
-
-
-
                 return String.Compare(X.SubItems[ColumnIndex].Text, Y.SubItems[ColumnIndex].Text);
             }
             catch
             {
-               //MessageBox.Show(x.ToString());
-               //MessageBox.Show(y.ToString());
                 return 0;
             }
         }
